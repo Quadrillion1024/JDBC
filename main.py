@@ -12,7 +12,7 @@ class Question:
     answer = 0           #答案
     answer_char = " "    #答案表示
     probability = 0.5    #分数出现的概率
-    count = 4            #操作数的多少
+    count = 4            #操作数
     def __init__(self,number_range,count,probability):
 
         self.number_range = number_range
@@ -170,7 +170,7 @@ class Parameter :
     expression_count = 5 
     probability = 0.5    #分数出现的概率
     expressionlist = []  #算式列表
-    count = 4            #操作数的多少
+    count = 4            #操作数
     boolean = True
     
     def get_parameter(self,ret):
@@ -218,9 +218,8 @@ class Parameter :
             i += 1
         E.close()
         A.close()
-    def check_answers(ret):
-        path1 = ret[0]
-        path2 = ret[1]
+    def check_answers(path1,path2):
+        
         list = Parameter.get_answers(path1)
         grade = Parameter.checks(list,path2)
         Parameter.write_grade(grade)
@@ -269,24 +268,33 @@ class Parameter :
             msg = '请输入'
             title = '小学四则运算'
             fields = ['生成题目的个数','生成参数的范围']
-            ret = e.multenterbox(msg, title,fields,values=[1,1])
-            add = Parameter(ret)
-           
+            try:
+                ret = e.multenterbox(msg, title,fields,values=[1,1])
+                if int(ret[0])<=0 or int(ret[1])<=0:
+                    e.msgbox(msg='参数错误，请重试新输入！', title='参数错误', ok_button='好耶！')
+                    Parameter.gui()
+                add = Parameter(ret)
+            except:
+                e.exceptionbox()
             order2 = e.ccbox(msg='请选择', title='小学四则运算', choices=['继续', '退出'])
             if order2:
                 Parameter.gui()
             elif not order2:
                 e.msgbox(msg='退出', title='退出', ok_button='好耶！')
         elif not order: 
-            msg = '请输入'
-            title = '小学四则运算'
-            fields = ['用户答案文件路径','题目答案文件路径']
+            e.msgbox(msg='根据提示选择文件路径', title='批改作业', ok_button='好耶！')
+            msg1 = '选择一个文件，将会返回该文件的完整的目录'
+            title1 = '用户答案文件路径'
+            title2 = '题目答案文件路径'
+            try:
+                path1 = e.fileopenbox(msg1,title1,filetypes=["*.txt"])
+                path2 = e.fileopenbox(msg1,title2,filetypes=["*.txt"])
             #path1 用户答案路径 path2原答案
-            ret2 = e.multenterbox(msg, title, fields,values=[0,0])
-            Parameter.check_answers(ret2)
-            
-            e.msgbox(msg='批改完成', title='退出', ok_button='好耶！')
-            
+                Parameter.check_answers(path1,path2)
+                e.msgbox(msg='批改完成', title='退出', ok_button='好耶！')
+            except:
+                e.exceptionbox()
+                
             order2 = e.ccbox(msg='请选择', title='小学四则运算', choices=['继续', '退出'])
             if order2:
                 Parameter.gui()
@@ -297,5 +305,3 @@ def main():
     Parameter.gui()
 
 main()
-
-
