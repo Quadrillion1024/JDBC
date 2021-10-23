@@ -218,21 +218,29 @@ class Parameter :
             i += 1
         E.close()
         A.close()
-    def write_grade(self,grade):#写入做题结果文件
+    def check_answers(ret):
+        path1 = ret[0]
+        path2 = ret[1]
+        list = Parameter.get_answers(path1)
+        grade = Parameter.checks(list,path2)
+        Parameter.write_grade(grade)
+        
+    def write_grade(grade):#写入做题结果文件
         G = open('Grade.txt',"w")
         G.write('Correct:'+ str(len(grade[0])) + str(grade[0])+'\n'+ 'Wrong:'+ str(len(grade[1])) + str(grade[1])+'\n')
         G.close()
-    def get_answers(self):#获得用户答案
-        with open('Exercises.txt',"r",encoding="gbk") as file:
+    def get_answers(path2):#获得用户答案
+        with open(path2,"r",encoding="gbk") as file:
             lines = file.readlines()
+
             list = []
             for line in lines:
-                answer = line.split('=')[1]
+                answer = line.split('.')[1]
                 answer1 = answer.replace(' ','')
                 list.append(answer1)
         return list
-    def checks(self,list):#比对答案
-        with open('Answer.txt',"r",encoding="gbk") as f:
+    def checks(list,path1):#比对答案
+        with open(path1,"r",encoding="gbk") as f:
             lines = f.readlines()
             listA =[]
             correct=[]
@@ -266,21 +274,22 @@ class Parameter :
            
             order2 = e.ccbox(msg='请选择', title='小学四则运算', choices=['继续', '退出'])
             if order2:
-                self.gui()
+                Parameter.gui()
             elif not order2:
                 e.msgbox(msg='退出', title='退出', ok_button='好耶！')
         elif not order: 
             msg = '请输入'
             title = '小学四则运算'
-            fields = ['题目文件路径','答案文件路径']
-            ret = e.multenterbox(msg, title, fields,values=[0,0])
-            path1 = ret[0]
-            path2 = ret[1]
-            e.msgbox(msg='还没写到这部分', title='退出', ok_button='好耶！')
-        
+            fields = ['用户答案文件路径','题目答案文件路径']
+            #path1 用户答案路径 path2原答案
+            ret2 = e.multenterbox(msg, title, fields,values=[0,0])
+            Parameter.check_answers(ret2)
+            
+            e.msgbox(msg='批改完成', title='退出', ok_button='好耶！')
+            
             order2 = e.ccbox(msg='请选择', title='小学四则运算', choices=['继续', '退出'])
             if order2:
-                self.gui()
+                Parameter.gui()
             elif not order2:
                 e.msgbox(msg='退出', title='退出', ok_button='好耶！')
 
